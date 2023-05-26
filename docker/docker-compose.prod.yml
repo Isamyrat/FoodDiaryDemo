@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+    app:
+        container_name: app-prod
+        image: app-prod
+        build:
+            target: production
+        volumes:
+            - ./food-diary/src:/app/food-diary/src
+        ports:
+            - "3000:3000"
+    db-diary:
+        image: postgres:14
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=isa_password
+            - POSTGRES_USER=isa_user
+            - POSTGRES_DB=foodDiary
+    tomcat9:
+        image: tomcat:9.0.75-jdk17-temurin-focal
+        restart: always
+        links:
+            - db-diary
+        volumes:
+            - ./tomcat/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml:ro
+            - ./tomcat/webapps:/usr/local/tomcat/webapps:rw
+            - ./tomcat/logs:/usr/local/tomcat/logs:rw
+            - ./tomcat/config:/usr/local/tomcat/config:ro

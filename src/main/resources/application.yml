@@ -1,0 +1,33 @@
+server:
+    servlet:
+        context-path: /diary
+spring:
+    application:
+        name: food-diary-api
+    datasource:
+        url: jdbc:postgresql://db-diary:5432/foodDiary
+        username: isa_user
+        password: isa_password
+    jpa:
+        show-sql: true
+        hibernate:
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    liquibase:
+        change-log: db/changelog/db.changelog-master.xml
+
+app:
+    jwt:
+        # Signing key for HS512 algorithm
+        # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
+        secret: v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp
+        expiration:
+            minutes: 10
+    cors:
+        allowed-origins: http://localhost:3000
+
+logging:
+    level:
+        com:
+            food:
+                diary: TRACE

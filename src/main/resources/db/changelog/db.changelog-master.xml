@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="CREATE_USER_TABLE" author="gurbanov">
+        <createTable tableName="USERS">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="PASSWORD" type="varchar(70)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLE_NAME" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="INSERT_DEFAULT_ADMIN" author="gurbanov">
+        <sql>
+            INSERT INTO USERS (USERNAME, PASSWORD, ENABLED, ROLE_NAME)
+            VALUES ('admin', '$2a$10$BRSkeRnrlCkHbySCQJFxFee4idmivCa0CILNdFX8cLIfipTmD3xqq', true, 'ROLE_ADMIN'),
+                   ('user', '$2a$10$wVc5cYDgmj.OfVK5Kz.jjumbRv4m5rssR7G0cZcbafYuc7MdkscFW', true, 'ROLE_USER'),
+                   ('curator', '$2a$10$TlCwcje39vRKm7WEBdHuEO110ATzXXsa610pJQtX7ErZ1UUV7oSM.', true, 'ROLE_CURATOR')
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="CREATE_CURATOR_USER_TABLE" author="gurbanov">
+        <createTable tableName="CURATOR_USER">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="CURATOR_ID" type="bigint">
+                <constraints references="USERS(ID)" foreignKeyName="FK_CURATOR_ID" nullable="false"/>
+            </column>
+            <column name="USER_ID" type="bigint">
+                <constraints references="USERS(ID)" foreignKeyName="FK_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="CREATE_FOOD_DIARY_TABLE" author="gurbanov">
+        <createTable tableName="FOOD_DIARY">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="water" type="bigint"/>
+            <column name="emotional_condition" type="varchar(100)"/>
+            <column name="physical_state" type="varchar(100)"/>
+            <column name="USER_ID" type="bigint">
+                <constraints references="USERS(ID)" foreignKeyName="FK_FOOD_USER_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="CREATE_PRODUCT_TABLE" author="gurbanov">
+        <createTable tableName="PRODUCT">
+            <column name="ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product" type="varchar(500)"/>
+            <column name="width" type="bigint"/>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FOOD_DIARY_ID" type="bigint">
+                <constraints references="FOOD_DIARY(ID)" foreignKeyName="FK_PRODUCT_FOOD_DIARY_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="INSERT_DEFAULT_CURATOR_USER" author="gurbanov">
+        <sql>
+            INSERT INTO CURATOR_USER (curator_id, user_id)
+            VALUES (3, 2)
+        </sql>
+    </changeSet>
+
+    <changeSet id="INSERT_DEFAULT_FOOD_DIARY" author="gurbanov">
+        <sql>
+            INSERT INTO FOOD_DIARY (type, created_date, water, emotional_condition, physical_state, user_id)
+            VALUES ('BREAKFAST', '2023-04-27 10:01:52.000000', 45, 'Good', 'Exercise', 2),
+                   ('FIRST_SNACK', '2023-04-27 13:01:52.000000', 55, 'Good', 'Exercise', 2),
+                   ('LUNCH', '2023-04-27 16:01:52.000000', 65, 'Good', 'Exercise', 2),
+                   ('SECOND_SNACK', '2023-04-27 18:01:52.000000', 45, 'Good', 'Exercise', 2),
+                   ('DINNER', '2023-04-27 20:01:52.000000', 85, 'Good', 'Exercise', 2)
+        </sql>
+    </changeSet>
+
+    <changeSet id="INSERT_DEFAULT_PRODUCT" author="gurbanov">
+        <sql>
+            INSERT INTO PRODUCT (product, width, active, FOOD_DIARY_ID)
+            VALUES ('Пшеничная каша', 600, true, 1),
+                   ('Манная каша', 300, true, 1),
+                   ('Плов', 900, true, 2),
+                   ('Сэндвич', 500, true, 3),
+                   ('Сырок', 50, true, 4),
+                   ('Самса', 1000, true, 5)
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
